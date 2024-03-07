@@ -535,6 +535,11 @@ require('lazy').setup {
         gopls = {},
         pyright = {},
         rust_analyzer = {},
+        ansiblels = {},
+        glow = {},
+        markdownlint = {},
+        marksman = {},
+        prettierd = {},
         -- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
         --
         -- Some languages (like typescript) have entire language plugins that can be useful:
@@ -585,6 +590,7 @@ require('lazy').setup {
       local ensure_installed = vim.tbl_keys(servers or {})
       vim.list_extend(ensure_installed, {
         'stylua', -- Used to format lua code
+        'ansible-lint',
       })
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
@@ -605,14 +611,26 @@ require('lazy').setup {
 
   { -- Autoformat
     'stevearc/conform.nvim',
+    keys = {
+      {
+        -- Customize or remove this keymap to your liking
+        '<leader>fm',
+        function()
+          require('conform').format { async = true, lsp_fallback = true }
+        end,
+        mode = '',
+        desc = 'Format buffer',
+      },
+    },
     opts = {
-      notify_on_error = false,
+      notify_on_error = true,
       format_on_save = {
         timeout_ms = 500,
         lsp_fallback = true,
       },
       formatters_by_ft = {
         lua = { 'stylua' },
+        markdown = { { 'prettierd', 'markdownlint' } },
         -- Conform can also run multiple formatters sequentially
         -- python = { "isort", "black" },
         --
@@ -781,7 +799,7 @@ require('lazy').setup {
 
       ---@diagnostic disable-next-line: missing-fields
       require('nvim-treesitter.configs').setup {
-        ensure_installed = { 'bash', 'c', 'html', 'lua', 'markdown', 'vim', 'vimdoc' },
+        ensure_installed = { 'bash', 'c', 'html', 'lua', 'markdown', 'markdown_inline', 'vim', 'vimdoc' },
         -- Autoinstall languages that are not installed
         auto_install = true,
         highlight = { enable = true },
@@ -814,7 +832,7 @@ require('lazy').setup {
   --
   --  Uncomment the following line and add your plugins to `lua/custom/plugins/*.lua` to get going.
   --    For additional information, see `:help lazy.nvim-lazy.nvim-structuring-your-plugins`
-  -- { import = 'custom.plugins' },
+  { import = 'custom.plugins' },
 }
 
 -- The line beneath this is called `modeline`. See `:help modeline`
